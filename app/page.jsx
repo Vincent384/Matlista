@@ -56,6 +56,17 @@ const Home = () => {
       })
     }
 
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          }, err => {
+            console.log('Service Worker registration failed:', err);
+          });
+      });
+    }
+
     return () => unsubscribeMatlista()
   }, [])
 
@@ -79,7 +90,7 @@ const handleDelete = (id) => {
 
   return (
     <>
-      <div className='bg-slate-400 flex justify-between items-center p-5 overflow-auto'>
+      <div className='bg-slate-400 flex justify-end items-center p-5 overflow-auto'>
         <button onClick={handleDeleteAll} className='px-3 py-2 bg-red-700 text-white font-bold rounded-md'>Rensa</button>
       </div>
       <div className=' bg-slate-400 h-screen pt-10 flex flex-col items-center overflow-auto'>
