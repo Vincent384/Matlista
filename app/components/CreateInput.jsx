@@ -5,7 +5,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { addDoc, collection, doc, getDoc, setDoc } from '@firebase/firestore'
 import db from '@/firebase.config'
 
-export const CreateInput = () => {
+export const CreateInput = ({toggle}) => {
   const [selectForm, setSelectForm] = useState('')
   const [inputFoodForm, setInputFoodForm] = useState({
     foodName: ''
@@ -13,11 +13,11 @@ export const CreateInput = () => {
 
   const handleSelectChange = (value) => {
     setSelectForm(value)
-    console.log("Selected value:", value)
   }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
+    console.log('Input Change:', name, value)
     setInputFoodForm((prevForm) => ({
       ...prevForm,
       [name]: value
@@ -26,8 +26,31 @@ export const CreateInput = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-        const categoryDocRef = doc(db,'matlista',selectForm)
+
+    if(inputFoodForm.foodName === ''){
+      return
+    }
+    if(toggle){
+      try {
+          const categoryDocRef = doc(db,'matlista',selectForm)
+          const categoryDoc = await getDoc(categoryDocRef)
+  
+          if(!categoryDoc.exists()){
+              await setDoc(categoryDocRef,{title:selectForm})
+          }
+  
+          const itemsCollectionRef = collection(categoryDocRef,'items')
+          await addDoc(itemsCollectionRef,{food:inputFoodForm.foodName})
+          setInputFoodForm({foodName:''})
+  
+      } catch (error) {
+        console.log(error.message)
+      }
+    }
+
+    if(!toggle){
+      try {
+        const categoryDocRef = doc(db,'svärmorslistan',selectForm)
         const categoryDoc = await getDoc(categoryDocRef)
 
         if(!categoryDoc.exists()){
@@ -41,6 +64,9 @@ export const CreateInput = () => {
     } catch (error) {
       console.log(error.message)
     }
+    }
+
+    
   }
 
   return (

@@ -5,52 +5,102 @@ import db from '@/firebase.config'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-export const Foodform = ({ food, onDelete }) => {
+export const Foodform = ({ food, onDelete,onDelete2,toggle }) => {
 
   const [editFood, setEditFood] = useState({id:null,text:''})
 
   const handleDelete = async () => {
-    try {
-      // Delete all documents in the sub-collection first
-      const itemsCollection = collection(db, 'matlista', food.id, 'items')
-      const itemsSnapshot = await getDocs(itemsCollection)
-      const batch = writeBatch(db)
-      itemsSnapshot.docs.forEach(doc => {
-        batch.delete(doc.ref)
-      })
-      await batch.commit()
+    if(toggle){
+      try {
+        // Delete all documents in the sub-collection first
+        const itemsCollection = collection(db, 'matlista', food.id, 'items')
+        const itemsSnapshot = await getDocs(itemsCollection)
+        const batch = writeBatch(db)
+        itemsSnapshot.docs.forEach(doc => {
+          batch.delete(doc.ref)
+        })
+        await batch.commit()
+  
+        await deleteDoc(doc(db, 'matlista', food.id))
+        onDelete(food.id)
+      } catch (error) {
+        console.log(error.message)
+      }
+    }
 
-      await deleteDoc(doc(db, 'matlista', food.id))
-      onDelete(food.id)
-    } catch (error) {
-      console.log(error.message)
+    if(!toggle){
+      try {
+        // Delete all documents in the sub-collection first
+        const itemsCollection = collection(db, 'svärmorslistan', food.id, 'items')
+        const itemsSnapshot = await getDocs(itemsCollection)
+        const batch = writeBatch(db)
+        itemsSnapshot.docs.forEach(doc => {
+          batch.delete(doc.ref)
+        })
+        await batch.commit()
+  
+        await deleteDoc(doc(db, 'svärmorslistan', food.id))
+        onDelete2(food.id)
+      } catch (error) {
+        console.log(error.message)
+      }
     }
   }
 
   const handleDeleteItem = async (itemName) => {
-    try {
-      const itemToDelete = food.items.find(item => item.food === itemName);
-      if (!itemToDelete) {
-        console.error(`Item '${itemName}' not found in food items.`);
-        return;
+    if(toggle){
+      try {
+        const itemToDelete = food.items.find(item => item.food === itemName);
+        if (!itemToDelete) {
+          console.error(`Item '${itemName}' not found in food items.`);
+          return;
+        }
+    
+        const itemDocRef = doc(db, 'matlista', food.id, 'items', itemToDelete.id);
+        await deleteDoc(itemDocRef);
+        onDelete(itemName,itemName.food)
+      } catch (error) {
+        console.log(error.message);
       }
-  
-      const itemDocRef = doc(db, 'matlista', food.id, 'items', itemToDelete.id);
-      await deleteDoc(itemDocRef);
-      onDelete(itemName,itemName.food)
-    } catch (error) {
-      console.log(error.message);
+    }
+
+    if(!toggle){
+      try {
+        const itemToDelete = food.items.find(item => item.food === itemName);
+        if (!itemToDelete) {
+          console.error(`Item '${itemName}' not found in food items.`);
+          return;
+        }
+    
+        const itemDocRef = doc(db, 'svärmorslistan', food.id, 'items', itemToDelete.id);
+        await deleteDoc(itemDocRef);
+        onDelete2(itemName,itemName.food)
+      } catch (error) {
+        console.log(error.message);
+      }
     }
   }
 
   const handleUpdate = async(itemId) =>{
-    try {
-      const foodRef = doc(db, 'matlista', food.id, 'items', itemId) 
-      console.log(foodRef)
-      await updateDoc(foodRef,{food:editFood.text})
-      setEditFood({id:null,text:''})
-    } catch (error) {
-     console.log(error.message) 
+    if(toggle){
+      try {
+        const foodRef = doc(db, 'matlista', food.id, 'items', itemId) 
+        console.log(foodRef)
+        await updateDoc(foodRef,{food:editFood.text})
+        setEditFood({id:null,text:''})
+      } catch (error) {
+       console.log(error.message) 
+      }
+    }
+    if(!toggle){
+      try {
+        const foodRef = doc(db, 'svärmorslistan', food.id, 'items', itemId) 
+        console.log(foodRef)
+        await updateDoc(foodRef,{food:editFood.text})
+        setEditFood({id:null,text:''})
+      } catch (error) {
+       console.log(error.message) 
+      }
     }
   }
 
