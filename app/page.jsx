@@ -8,7 +8,7 @@ import { CreateInput } from './components/CreateInput'
 
 const Home = () => {
   const [getFoodList, setGetFoodList] = useState([])
-  const [toggle, setToggle] = useState(false)  
+  const [toggle, setToggle] = useState(true)  
   const [foodlist2, setFoodlist2] = useState([])
 
   useEffect(() => {
