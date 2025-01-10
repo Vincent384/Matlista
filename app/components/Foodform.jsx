@@ -111,7 +111,6 @@ export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle }) => {
       <div className='w-[300px] border mt-4 bg-white/70 rounded-md'>
     <div className='relative'>
       <h2 className='text-center text-xl font-bold my-3'>{food.title}</h2>
-      <X onClick={handleDelete} className='absolute top-0 right-3 cursor-pointer' />
     </div>
     {food.items.map(item => (
       <div key={item.id} className='flex justify-between px-2 py-1 border bg-slate-100 rounded-md mb-2 mx-1 overflow-auto'>
