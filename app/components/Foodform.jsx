@@ -5,7 +5,7 @@ import db from '@/firebase.config'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-export const Foodform = ({ food, onDelete,onDelete2,toggle }) => {
+export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle }) => {
 
   const [editFood, setEditFood] = useState({id:null,text:''})
 
@@ -104,9 +104,11 @@ export const Foodform = ({ food, onDelete,onDelete2,toggle }) => {
     }
   }
 
-
   return (
-    <div className='w-[300px] border mt-4 bg-white/70 rounded-md'>
+    <>
+    {
+      food.items.length === 0 ? '' :
+      <div className='w-[300px] border mt-4 bg-white/70 rounded-md'>
     <div className='relative'>
       <h2 className='text-center text-xl font-bold my-3'>{food.title}</h2>
       <X onClick={handleDelete} className='absolute top-0 right-3 cursor-pointer' />
@@ -115,8 +117,8 @@ export const Foodform = ({ food, onDelete,onDelete2,toggle }) => {
       <div key={item.id} className='flex justify-between px-2 py-1 border bg-slate-100 rounded-md mb-2 mx-1 overflow-auto'>
         {editFood && editFood.id === item.id ? (
           <Input
-            value={editFood.text}
-            onChange={e => setEditFood({ ...editFood, text: e.target.value })}
+          value={editFood.text}
+          onChange={e => setEditFood({ ...editFood, text: e.target.value })}
           />
         ) : (
           <p className='text-lg pr-2'>{item.food}</p>
@@ -137,5 +139,7 @@ export const Foodform = ({ food, onDelete,onDelete2,toggle }) => {
       </div>
     ))}
   </div>
+  }
+    </>
   )
 }

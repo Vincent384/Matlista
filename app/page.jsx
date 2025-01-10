@@ -10,6 +10,9 @@ const Home = () => {
   const [getFoodList, setGetFoodList] = useState([])
   const [toggle, setToggle] = useState(true)  
   const [foodlist2, setFoodlist2] = useState([])
+  const [modalToggle, setModalToggle] = useState(false)
+
+  const [reArray, setReArray] = useState([])
 
   useEffect(() => {
     let unsubscribe;
@@ -181,6 +184,7 @@ const Home = () => {
         }
     
         await batch.commit();
+        setModalToggle(false)
       } catch (error) {
         console.log(error.message);
       }
@@ -205,6 +209,8 @@ const Home = () => {
         }
     
         await batch.commit();
+        setModalToggle(false)
+
       } catch (error) {
         console.log(error.message);
       }
@@ -224,6 +230,9 @@ function onToggle(){
   setToggle(prev => !prev)
 }
 
+function modalHandler(){
+  setModalToggle(prev => !prev)
+}
 
   return (
     <>
@@ -233,16 +242,32 @@ function onToggle(){
           <button className='px-4 py-2 bg-emerald-400 rounded-full text-white font-semibold' onClick={onToggle}>Linneas och Vincents lista</button>
           : <button className='px-4 py-2 bg-orange-400 rounded-full text-white font-semibold' onClick={onToggle} >Marias och Per-Eriks lista</button>
         }
-        <button onClick={handleDeleteAll} className='px-3 py-2 bg-red-700 text-white font-bold rounded-md'>Rensa</button>
+        <button onClick={modalHandler} className='px-3 py-2 bg-red-700 text-white font-bold rounded-md'>Rensa</button>
       </div>
       <div className=' bg-slate-400 h-screen pt-10 flex flex-col items-center overflow-auto'>
+        <>
+        {
+          modalToggle && 
+          <div className='relative flex justify-center items-center'>
+              <div className='absolute bg-black p-10 mt-12 '>
+                  <h1 className='text-white font-semibold text-lg mt-12 mb-10'>Är du säker att du vill ta bort listan?</h1>
+                  <div className='flex gap-5'>
+                    <button onClick={handleDeleteAll} className='bg-red-700 text-white font-semibold px-3 py-2 rounded-md'>Ta&nbsp;bort</button>
+                    <button onClick={modalHandler} className='bg-green-500 py-2 text-white font-semibold px-4 rounded-md'>Gå&nbsp;tillbaka</button>
+                  </div>
+              </div>
+          </div>
+        }
+        </>
+     
+
         <form>
           <h1 className='text-center text-3xl text-white font-bold mb-5'>Matlista</h1>
           <CreateInput toggle={toggle}/>
         </form>
         {
          toggle && getFoodList.map((food) => {
-            return <Foodform key={food.id} food={food} toggle={toggle} onDelete={handleDelete}/>
+            return <Foodform key={food.id} food={food} getFoodList={getFoodList} toggle={toggle} onDelete={handleDelete}/>
           })
         }
         {
