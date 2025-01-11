@@ -5,7 +5,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { addDoc, collection, doc, getDoc, setDoc } from '@firebase/firestore'
 import db from '@/firebase.config'
 
-export const CreateInput = ({toggle}) => {
+export const CreateInput = ({toggle,setReArray}) => {
   const [selectForm, setSelectForm] = useState('')
   const [inputFoodForm, setInputFoodForm] = useState({
     foodName: ''
@@ -42,6 +42,7 @@ export const CreateInput = ({toggle}) => {
           const itemsCollectionRef = collection(categoryDocRef,'items')
           await addDoc(itemsCollectionRef,{food:inputFoodForm.foodName})
           setInputFoodForm({foodName:''})
+          setReArray((prev) => [...prev,{title:selectForm, food:inputFoodForm.foodName}])
   
       } catch (error) {
         console.log(error.message)

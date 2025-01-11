@@ -4,6 +4,7 @@ import { Foodform } from './components/Foodform'
 import { collection, getDocs, onSnapshot,updateDoc,writeBatch } from '@firebase/firestore'
 import db from '@/firebase.config'
 import { CreateInput } from './components/CreateInput'
+import { RotateCcw } from 'lucide-react'
 
 
 const Home = () => {
@@ -13,7 +14,7 @@ const Home = () => {
   const [modalToggle, setModalToggle] = useState(false)
 
   const [reArray, setReArray] = useState([])
-
+  console.log(reArray)
   useEffect(() => {
     let unsubscribe;
   
@@ -234,6 +235,10 @@ function modalHandler(){
   setModalToggle(prev => !prev)
 }
 
+function reHandler(){
+
+}
+
   return (
     <>
       <div className='bg-slate-400 flex gap-3 justify-end items-center p-5 overflow-auto'>
@@ -244,6 +249,9 @@ function modalHandler(){
         }
         <button onClick={modalHandler} className='px-3 py-2 bg-red-700 text-white font-bold rounded-md'>Rensa</button>
       </div>
+          <div className='bg-slate-400 flex justify-end'>
+            <RotateCcw onClick={reHandler} className='mr-10 size-10' />
+          </div>
       <div className=' bg-slate-400 h-screen pt-10 flex flex-col items-center overflow-auto'>
         <>
         {
@@ -263,7 +271,7 @@ function modalHandler(){
 
         <form>
           <h1 className='text-center text-3xl text-white font-bold mb-5'>Matlista</h1>
-          <CreateInput toggle={toggle}/>
+          <CreateInput setReArray={setReArray} toggle={toggle}/>
         </form>
         {
          toggle && getFoodList.map((food) => {
