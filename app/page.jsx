@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { Foodform } from './components/Foodform'
-import { collection, getDocs, onSnapshot,updateDoc,writeBatch } from '@firebase/firestore'
+import { addDoc, collection, doc, getDoc, getDocs, onSnapshot,setDoc,updateDoc,writeBatch } from '@firebase/firestore'
 import db from '@/firebase.config'
 import { CreateInput } from './components/CreateInput'
 import { RotateCcw } from 'lucide-react'
@@ -13,8 +13,10 @@ const Home = () => {
   const [foodlist2, setFoodlist2] = useState([])
   const [modalToggle, setModalToggle] = useState(false)
 
+
   const [reArray, setReArray] = useState([])
-  console.log(reArray)
+  const [redoArray2, setRedoArray2] = useState([])
+
   useEffect(() => {
     let unsubscribe;
   
@@ -235,7 +237,63 @@ function modalHandler(){
   setModalToggle(prev => !prev)
 }
 
-function reHandler(){
+
+
+async function redoHandler(){
+  console.log(reArray)
+  if(reArray.length !== 0){
+    if(toggle){
+      const lastElement = reArray.slice(-1)[0]
+      console.log(lastElement)
+      console.log(lastElement.title)
+      console.log(lastElement.food)
+      try {
+        const categoryDocRef = doc(db,'matlista',lastElement.title)
+        const categoryDoc = await getDoc(categoryDocRef)
+        console.log(categoryDoc)
+        if(!categoryDoc.exists()){
+          await setDoc(categoryDocRef,{title:lastElement.title})
+        }
+        
+        const itemsCollectionRef = collection(categoryDocRef,'items')
+        await addDoc(itemsCollectionRef,{food:lastElement.food})
+     
+        
+          setReArray(prev => prev.filter(item => item.food !== lastElement.food))
+          console.log(reArray)
+      
+    } catch (error) {
+      console.log(error.message)
+    }
+    }
+  }
+
+  if(redoArray2.length !== 0){
+    if(!toggle){
+      const lastElement = redoArray2.slice(-1)[0]
+      console.log(lastElement)
+      console.log(lastElement.title)
+      console.log(lastElement.food)
+      try {
+        const categoryDocRef = doc(db,'svärmorslistan',lastElement.title)
+        const categoryDoc = await getDoc(categoryDocRef)
+        console.log(categoryDoc)
+        if(!categoryDoc.exists()){
+          await setDoc(categoryDocRef,{title:lastElement.title})
+        }
+        
+        const itemsCollectionRef = collection(categoryDocRef,'items')
+        await addDoc(itemsCollectionRef,{food:lastElement.food})
+     
+        
+          setRedoArray2(prev => prev.filter(item => item.food !== lastElement.food))
+          console.log(reArray)
+      
+    } catch (error) {
+      console.log(error.message)
+    }
+    }
+  }
 
 }
 
@@ -250,7 +308,7 @@ function reHandler(){
         <button onClick={modalHandler} className='px-3 py-2 bg-red-700 text-white font-bold rounded-md'>Rensa</button>
       </div>
           <div className='bg-slate-400 flex justify-end'>
-            <RotateCcw onClick={reHandler} className='mr-10 size-10' />
+            <RotateCcw onClick={redoHandler} className='mr-10 size-10 cursor-pointer' />
           </div>
       <div className=' bg-slate-400 h-screen pt-10 flex flex-col items-center overflow-auto'>
         <>
@@ -271,7 +329,7 @@ function reHandler(){
 
         <form>
           <h1 className='text-center text-3xl text-white font-bold mb-5'>Matlista</h1>
-          <CreateInput setReArray={setReArray} toggle={toggle}/>
+          <CreateInput setRedoArray2={setRedoArray2} setReArray={setReArray} toggle={toggle}/>
         </form>
         {
          toggle && getFoodList.map((food) => {
