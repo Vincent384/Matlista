@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Pen, Trash, X } from 'lucide-react'
-import { doc, deleteDoc, collection, getDocs, writeBatch, getDoc, updateDoc } from '@firebase/firestore'
+import { doc, deleteDoc, collection, getDocs, writeBatch, getDoc, updateDoc, addDoc, serverTimestamp } from '@firebase/firestore'
 import db from '@/firebase.config'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -55,7 +55,18 @@ export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle }) => {
           console.error(`Item '${itemName}' not found in food items.`);
           return;
         }
-    
+       
+
+        const undoObject = {
+          id:itemToDelete.id,
+          title:food.title,
+          food:itemToDelete.food,
+          timestamp: serverTimestamp() 
+        }
+        
+        await addDoc(collection(db,'UndoArray'),undoObject)
+
+
         const itemDocRef = doc(db, 'matlista', food.id, 'items', itemToDelete.id);
         await deleteDoc(itemDocRef);
         onDelete(itemName,itemName.food)
@@ -71,6 +82,15 @@ export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle }) => {
           console.error(`Item '${itemName}' not found in food items.`);
           return;
         }
+
+        const undoObject = {
+          id:itemToDelete.id,
+          title:food.title,
+          food:itemToDelete.food,
+          timestamp: serverTimestamp() 
+        }
+        
+        await addDoc(collection(db,'UndoArray2'),undoObject)
     
         const itemDocRef = doc(db, 'svärmorslistan', food.id, 'items', itemToDelete.id);
         await deleteDoc(itemDocRef);
@@ -131,7 +151,7 @@ export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle }) => {
           ) : (
             <>
               <Pen onClick={() => setEditFood({ id: item.id, text: item.food })} className='cursor-pointer' />
-              <Trash onClick={() => handleDeleteItem(item.food)} className='text-red-600 cursor-pointer' />
+              <Trash onClick={() => handleDeleteItem(item.food,food.title)} className='text-red-600 cursor-pointer' />
             </>
           )}
         </div>
