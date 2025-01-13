@@ -5,7 +5,7 @@ import db from '@/firebase.config'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle }) => {
+export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle,setReArray,setRedoArray2 }) => {
 
   const [editFood, setEditFood] = useState({id:null,text:''})
 
@@ -55,17 +55,8 @@ export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle }) => {
           console.error(`Item '${itemName}' not found in food items.`);
           return;
         }
-       
 
-        const undoObject = {
-          id:itemToDelete.id,
-          title:food.title,
-          food:itemToDelete.food,
-          timestamp: serverTimestamp() 
-        }
-        
-        await addDoc(collection(db,'UndoArray'),undoObject)
-
+        setReArray((prev) => [...prev,{id:itemToDelete.id,title:food.title,food:itemToDelete.food}])
 
         const itemDocRef = doc(db, 'matlista', food.id, 'items', itemToDelete.id);
         await deleteDoc(itemDocRef);
@@ -82,16 +73,9 @@ export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle }) => {
           console.error(`Item '${itemName}' not found in food items.`);
           return;
         }
-
-        const undoObject = {
-          id:itemToDelete.id,
-          title:food.title,
-          food:itemToDelete.food,
-          timestamp: serverTimestamp() 
-        }
-        
-        await addDoc(collection(db,'UndoArray2'),undoObject)
     
+        setRedoArray2((prev) => [...prev,{id:itemToDelete.id,title:food.title,food:itemToDelete.food}])
+
         const itemDocRef = doc(db, 'svärmorslistan', food.id, 'items', itemToDelete.id);
         await deleteDoc(itemDocRef);
         onDelete2(itemName,itemName.food)

@@ -239,35 +239,27 @@ function modalHandler(){
   setModalToggle(prev => !prev)
 }
 
-
+console.log(redoArray2)
 
 async function redoHandler(){
-  console.log(reArray)
+  console.log(redoArray2)
 
     if(toggle){
       try {
-      const undoQuery = query(collection(db, 'UndoArray'), orderBy('timestamp', 'desc'), limit(1))
-      const querySnapshot = await getDocs(undoQuery)
 
-
-      const docSnap = querySnapshot.docs[0] 
-
-      const undoData = docSnap.data()
-
-
- 
-        const categoryDocRef = doc(db,'matlista',undoData.title)
+        const findUndo = reArray.slice(-1)[0]
+        
+        const categoryDocRef = doc(db,'matlista',findUndo.title)
         const categoryDoc = await getDoc(categoryDocRef)
 
         if(!categoryDoc.exists()){
-          await setDoc(categoryDocRef,{title:undoData.title})
+          await setDoc(categoryDocRef,{title:findUndo.title})
         }
         
         const itemsCollectionRef = collection(categoryDocRef,'items')
-        await addDoc(itemsCollectionRef,{food:undoData.food})
-        console.log(docSnap.id)
-        const deleteUndo = doc(db,'UndoArray',docSnap.id)
-        await deleteDoc(deleteUndo)
+        await addDoc(itemsCollectionRef,{food:findUndo.food})
+
+        setReArray(prev => prev.filter((item => item.id !== findUndo.id)))
       
     } catch (error) {
       console.log(error.message)
@@ -278,27 +270,20 @@ async function redoHandler(){
 
     if(!toggle){
       try {
-        const undoQuery = query(collection(db, 'UndoArray2'), orderBy('timestamp', 'desc'), limit(1))
-        const querySnapshot = await getDocs(undoQuery)
-  
-  
-        const docSnap = querySnapshot.docs[0] 
-  
-        const undoData = docSnap.data()
-  
-  
-   
-          const categoryDocRef = doc(db,'svärmorslistan',undoData.title)
+     
+        const findUndo = redoArray2.slice(-1)[0]
+        
+          const categoryDocRef = doc(db,'svärmorslistan',findUndo.title)
           const categoryDoc = await getDoc(categoryDocRef)
-          console.log(categoryDoc)
+      
           if(!categoryDoc.exists()){
-            await setDoc(categoryDocRef,{title:undoData.title})
+            await setDoc(categoryDocRef,{title:findUndo.title})
           }
           
           const itemsCollectionRef = collection(categoryDocRef,'items')
-          await addDoc(itemsCollectionRef,{food:undoData.food})
-          const deleteUndo = doc(db,'UndoArray2',docSnap.id)
-          await deleteDoc(deleteUndo)
+          await addDoc(itemsCollectionRef,{food:findUndo.food})
+          setRedoArray2(prev => prev.filter((item => item.id !== findUndo.id)))
+   
 
     } catch (error) {
       console.log(error.message)
@@ -344,12 +329,12 @@ async function redoHandler(){
         </form>
         {
          toggle && getFoodList.map((food) => {
-            return <Foodform key={food.id} food={food} getFoodList={getFoodList} toggle={toggle} onDelete={handleDelete}/>
+            return <Foodform key={food.id} setReArray={setReArray} food={food} getFoodList={getFoodList} toggle={toggle} onDelete={handleDelete}/>
           })
         }
         {
           !toggle && foodlist2.map((food) => {
-            return <Foodform key={food.id} food={food} toggle={toggle} onDelete2={handleDelete2}/>
+            return <Foodform key={food.id}  setRedoArray2={setRedoArray2} food={food} toggle={toggle} onDelete2={handleDelete2}/>
           })
         }
       </div>

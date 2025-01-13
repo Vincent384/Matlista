@@ -62,7 +62,7 @@ export const CreateInput = ({toggle,setReArray,setRedoArray2}) => {
         const itemsCollectionRef = collection(categoryDocRef,'items')
         await addDoc(itemsCollectionRef,{food:inputFoodForm.foodName})
         setInputFoodForm({foodName:''})
-        setRedoArray2((prev) => [...prev,{title:selectForm,food:inputFoodForm.foodName}])
+  
     } catch (error) {
       console.log(error.message)
     }
