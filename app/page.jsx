@@ -311,7 +311,7 @@ async function redoHandler(){
         {
           modalToggle && 
           <div className='relative flex justify-center items-center'>
-              <div className='absolute bg-black p-10 mt-12 '>
+              <div className='absolute bg-black p-10 mt-12 z-10'>
                   <h1 className='text-white font-semibold text-lg mt-12 mb-10'>Är du säker att du vill ta bort listan?</h1>
                   <div className='flex gap-5'>
                     <button onClick={handleDeleteAll} className='bg-red-700 text-white font-semibold px-3 py-2 rounded-md'>Ta&nbsp;bort</button>
