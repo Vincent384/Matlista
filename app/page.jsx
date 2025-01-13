@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { Foodform } from './components/Foodform'
-import { addDoc, collection, doc, getDoc, getDocs, onSnapshot,setDoc,updateDoc,writeBatch } from '@firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, limit, onSnapshot,orderBy,query,setDoc,updateDoc,writeBatch } from '@firebase/firestore'
 import db from '@/firebase.config'
 import { CreateInput } from './components/CreateInput'
 import { RotateCcw } from 'lucide-react'
@@ -16,6 +16,8 @@ const Home = () => {
 
   const [reArray, setReArray] = useState([])
   const [redoArray2, setRedoArray2] = useState([])
+
+  
 
   useEffect(() => {
     let unsubscribe;
@@ -241,58 +243,67 @@ function modalHandler(){
 
 async function redoHandler(){
   console.log(reArray)
-  if(reArray.length !== 0){
-    if(toggle){
-      const lastElement = reArray.slice(-1)[0]
-      console.log(lastElement)
-      console.log(lastElement.title)
-      console.log(lastElement.food)
-      try {
-        const categoryDocRef = doc(db,'matlista',lastElement.title)
-        const categoryDoc = await getDoc(categoryDocRef)
-        console.log(categoryDoc)
-        if(!categoryDoc.exists()){
-          await setDoc(categoryDocRef,{title:lastElement.title})
-        }
-        
-        const itemsCollectionRef = collection(categoryDocRef,'items')
-        await addDoc(itemsCollectionRef,{food:lastElement.food})
-     
-        
-          setReArray(prev => prev.filter(item => item.food !== lastElement.food))
-          console.log(reArray)
-      
-    } catch (error) {
-      console.log(error.message)
-    }
-    }
-  }
 
-  if(redoArray2.length !== 0){
-    if(!toggle){
-      const lastElement = redoArray2.slice(-1)[0]
-      console.log(lastElement)
-      console.log(lastElement.title)
-      console.log(lastElement.food)
+    if(toggle){
       try {
-        const categoryDocRef = doc(db,'svärmorslistan',lastElement.title)
+      const undoQuery = query(collection(db, 'UndoArray'), orderBy('timestamp', 'desc'), limit(1))
+      const querySnapshot = await getDocs(undoQuery)
+
+
+      const docSnap = querySnapshot.docs[0] 
+
+      const undoData = docSnap.data()
+
+
+ 
+        const categoryDocRef = doc(db,'matlista',undoData.title)
         const categoryDoc = await getDoc(categoryDocRef)
-        console.log(categoryDoc)
+
         if(!categoryDoc.exists()){
-          await setDoc(categoryDocRef,{title:lastElement.title})
+          await setDoc(categoryDocRef,{title:undoData.title})
         }
         
         const itemsCollectionRef = collection(categoryDocRef,'items')
-        await addDoc(itemsCollectionRef,{food:lastElement.food})
-     
-        
-          setRedoArray2(prev => prev.filter(item => item.food !== lastElement.food))
-          console.log(reArray)
+        await addDoc(itemsCollectionRef,{food:undoData.food})
+        console.log(docSnap.id)
+        const deleteUndo = doc(db,'UndoArray',docSnap.id)
+        await deleteDoc(deleteUndo)
       
     } catch (error) {
       console.log(error.message)
     }
     }
+  
+
+
+    if(!toggle){
+      try {
+        const undoQuery = query(collection(db, 'UndoArray2'), orderBy('timestamp', 'desc'), limit(1))
+        const querySnapshot = await getDocs(undoQuery)
+  
+  
+        const docSnap = querySnapshot.docs[0] 
+  
+        const undoData = docSnap.data()
+  
+  
+   
+          const categoryDocRef = doc(db,'svärmorslistan',undoData.title)
+          const categoryDoc = await getDoc(categoryDocRef)
+          console.log(categoryDoc)
+          if(!categoryDoc.exists()){
+            await setDoc(categoryDocRef,{title:undoData.title})
+          }
+          
+          const itemsCollectionRef = collection(categoryDocRef,'items')
+          await addDoc(itemsCollectionRef,{food:undoData.food})
+          const deleteUndo = doc(db,'UndoArray2',docSnap.id)
+          await deleteDoc(deleteUndo)
+
+    } catch (error) {
+      console.log(error.message)
+    }
+    
   }
 
 }
