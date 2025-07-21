@@ -5,6 +5,7 @@ import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, limit, onSnapshot,
 import db from '@/firebase.config'
 import { CreateInput } from './components/CreateInput'
 import { RotateCcw } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 
 const Home = () => {
@@ -239,10 +240,9 @@ function modalHandler(){
   setModalToggle(prev => !prev)
 }
 
-console.log(redoArray2)
+
 
 async function redoHandler(){
-  console.log(redoArray2)
 
     if(toggle){
       try {
@@ -255,14 +255,15 @@ async function redoHandler(){
         if(!categoryDoc.exists()){
           await setDoc(categoryDocRef,{title:findUndo.title})
         }
-        
+        console.log(reArray)
         const itemsCollectionRef = collection(categoryDocRef,'items')
         await addDoc(itemsCollectionRef,{food:findUndo.food})
 
         setReArray(prev => prev.filter((item => item.id !== findUndo.id)))
+        toast.success(findUndo.food)
       
     } catch (error) {
-      console.log(error.message)
+      toast.error(error)
     }
     }
   
@@ -283,10 +284,10 @@ async function redoHandler(){
           const itemsCollectionRef = collection(categoryDocRef,'items')
           await addDoc(itemsCollectionRef,{food:findUndo.food})
           setRedoArray2(prev => prev.filter((item => item.id !== findUndo.id)))
-   
+           toast.success(findUndo.food)
 
     } catch (error) {
-      console.log(error.message)
+        toast.error(error)
     }
     
   }

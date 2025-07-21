@@ -4,6 +4,7 @@ import { doc, deleteDoc, collection, getDocs, writeBatch, getDoc, updateDoc, add
 import db from '@/firebase.config'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import toast from 'react-hot-toast'
 
 export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle,setReArray,setRedoArray2 }) => {
 
@@ -57,7 +58,7 @@ export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle,setReArr
         }
 
         setReArray((prev) => [...prev,{id:itemToDelete.id,title:food.title,food:itemToDelete.food}])
-
+        toast.error(itemToDelete.food)          
         const itemDocRef = doc(db, 'matlista', food.id, 'items', itemToDelete.id);
         await deleteDoc(itemDocRef);
         onDelete(itemName,itemName.food)
@@ -75,7 +76,7 @@ export const Foodform = ({ getFoodList, food, onDelete,onDelete2,toggle,setReArr
         }
     
         setRedoArray2((prev) => [...prev,{id:itemToDelete.id,title:food.title,food:itemToDelete.food}])
-
+        toast.error(itemToDelete.food)          
         const itemDocRef = doc(db, 'svärmorslistan', food.id, 'items', itemToDelete.id);
         await deleteDoc(itemDocRef);
         onDelete2(itemName,itemName.food)
