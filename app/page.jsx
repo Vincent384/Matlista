@@ -248,7 +248,8 @@ async function redoHandler(){
       try {
 
         const findUndo = reArray.slice(-1)[0]
-        
+        console.log(findUndo)
+        if(findUndo === undefined) return
         const categoryDocRef = doc(db,'matlista',findUndo.title)
         const categoryDoc = await getDoc(categoryDocRef)
 
@@ -273,7 +274,7 @@ async function redoHandler(){
       try {
      
         const findUndo = redoArray2.slice(-1)[0]
-        
+        if(findUndo === undefined) return
           const categoryDocRef = doc(db,'svärmorslistan',findUndo.title)
           const categoryDoc = await getDoc(categoryDocRef)
       
